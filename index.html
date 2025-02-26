@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pig Bounce Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        #gameArea {
+            width: 90vw;
+            max-width: 600px;
+            height: 60vh;
+            max-height: 400px;
+            border: 2px solid black;
+            position: relative;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            touch-action: none; /* Improves mobile touch response */
+        }
+
+        #pig {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            cursor: pointer;
+            background-image: url('https://cdn.pixabay.com/photo/2016/04/15/04/49/pig-1329695_1280.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            transition: all 0.1s;
+        }
+
+        #score, #timer {
+            font-size: clamp(16px, 4vw, 24px);
+            margin: 5px;
+        }
+
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(16px, 4vw, 24px);
+            color: red;
+            display: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time: 30</div>
+    <div id="gameArea">
+        <div id="pig"></div>
+        <div id="message">Sean's a big pig</div>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const pig = document.getElementById('pig');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const message = document.getElementById('message');
+
+        let score = 0;
+        let timeLeft = 30;
+        let pigSize = 50;
+        let baseSpeed = 2;
+        let speedMultiplier = 1;
+        let posX = 0;
+        let posY = 0;
+        let dx = baseSpeed;
+        let dy = baseSpeed;
+        let gameActive = true;
+
+        function movePig() {
+            if (!gameActive) return;
+
+            posX += dx * speedMultiplier;
+            posY += dy * speedMultiplier;
+
+            if (posX + pigSize > gameArea.clientWidth || posX < 0) {
+                dx = -dx * (1 + Math.random() * 0.2);
+            }
+            if (posY + pigSize > gameArea.clientHeight || posY < 0) {
+                dy = -dy * (1 + Math.random() * 0.2);
+            }
+
+            posX = Math.max(0, Math.min(posX, gameArea.clientWidth - pigSize));
+            posY = Math.max(0, Math.min(posY, gameArea.clientHeight - pigSize));
+
+            pig.style.left = posX + 'px';
+            pig.style.top = posY + 'px';
+
+            requestAnimationFrame(movePig);
+        }
+
+        function handleClick() {
+            if (!gameActive) return;
+
+            score++;
+            scoreDisplay.textContent = `Score: ${score}`;
+            
+            message.style.display = 'block';
+            setTimeout(() => message.style.display = 'none', 500);
+
+            speedMultiplier += 0.2; // Increase speed with each click
+            pigSize = Math.max(20, pigSize - 2);
+            pig.style.width = pigSize + 'px';
+            pig.style.height = pigSize + 'px';
+        }
+
+        pig.addEventListener('click', handleClick);
+        pig.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleClick();
+        });
+
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = `Time: ${timeLeft}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                gameActive = false;
+                pig.style.display = 'none';
+                message.textContent = `Game Over! Final Score: ${score}`;
+                message.style.display = 'block';
+            }
+        }, 1000);
+
+        posX = Math.random() * (gameArea.clientWidth - pigSize);
+        posY = Math.random() * (gameArea.clientHeight - pigSize);
+        movePig();
+    </script>
+</body>
+</html>
