@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pig Bounce Game</title>
+    <title>Sean's a Big Pig</title>
     <style>
         body {
             margin: 0;
@@ -25,8 +25,8 @@
         }
 
         #pig {
-            width: 50px;
-            height: 50px;
+            width: 100px; /* Doubled from 50px to 100px */
+            height: 100px; /* Doubled from 50px to 100px */
             position: absolute;
             cursor: pointer;
             background-image: url('pig.png');
@@ -70,9 +70,10 @@
 
         let score = 0;
         let timeLeft = 30;
-        let pigSize = 50;
-        let baseSpeed = 2;
+        let pigSize = 100; /* Updated from 50 to 100 to match the doubled size */
+        let baseSpeed = 1; /* Reduced base speed for slower movement */
         let speedMultiplier = 1;
+        let maxSpeedMultiplier = 5; /* Cap the maximum speed multiplier to keep movement slower */
         let posX = 0;
         let posY = 0;
         let dx = baseSpeed;
@@ -86,10 +87,10 @@
             posY += dy * speedMultiplier;
 
             if (posX + pigSize > gameArea.clientWidth || posX < 0) {
-                dx = -dx * (1 + Math.random() * 0.2);
+                dx = -dx * (1 + Math.random() * 0.1); /* Reduced randomness for smoother movement */
             }
             if (posY + pigSize > gameArea.clientHeight || posY < 0) {
-                dy = -dy * (1 + Math.random() * 0.2);
+                dy = -dy * (1 + Math.random() * 0.1);
             }
 
             posX = Math.max(0, Math.min(posX, gameArea.clientWidth - pigSize));
@@ -110,8 +111,8 @@
             message.style.display = 'block';
             setTimeout(() => message.style.display = 'none', 500);
 
-            speedMultiplier += 0.2;
-            pigSize = Math.max(20, pigSize - 2);
+            speedMultiplier = Math.min(maxSpeedMultiplier, speedMultiplier + 0.1); /* Slower increase, capped at maxSpeedMultiplier */
+            pigSize = Math.max(40, pigSize - 4); /* Updated minimum size to 40px and shrink by 4px each click to match doubled size */
             pig.style.width = pigSize + 'px';
             pig.style.height = pigSize + 'px';
         }
